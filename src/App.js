@@ -1,6 +1,48 @@
+import { useState } from 'react';
 import './App.css';
+import TodoTable from './components/TodoTable';
+import NewTodoForm from './components/NewTodoForm';
 
 function App() {
+
+  const [todos, setTodos] = useState([
+    {
+      rowNumber: 1,
+      rowDescription: "Feed puppy",
+      rowAssigned: 'User One'
+    },
+    {
+      rowNumber: 2,
+      rowDescription: "Water plants",
+      rowAssigned: 'User Two'
+    },
+    {
+      rowNumber: 3,
+      rowDescription: "make dinner",
+      rowAssigned: 'User Three'
+    }
+  ]);
+
+  const [showAddTodoForm, setShowAddTodoForm] = useState(false);
+
+  function handleAddTodo(description, assigned) {
+    let rowNumber = 0;
+    if (todos.length === 0) {
+      rowNumber = 1;
+    } else {
+      rowNumber = todos[todos.length - 1].rowNumber + 1;
+    }
+    setTodos(prevTodo => [...prevTodo, {
+      rowNumber: rowNumber,
+      rowDescription: description,
+      rowAssigned: assigned
+    }]);
+  }
+
+  function deleteTodo(id) {
+    setTodos(prevTodos => prevTodos.filter(todo => todo.rowNumber !== id))
+  }
+
   return (
     <div className='mt-5 container'>
       <div className='card'>
@@ -8,27 +50,14 @@ function App() {
           Your Todo's
         </div>
         <div className='card-body'>
-          <table className='table table-hover'>
-            <thead >
-              <tr>
-                <th scope='col'>#</th>
-                <th scope='col'>Description</th>
-                <th scope='col'>Assigned</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <th scope='row'>1</th>
-                <td>feed dog</td>
-                <td>Eric</td>
-              </tr>
-              <tr>
-                <th scope='row'>2</th>
-                <td>Get haircut</td>
-                <td>Eric</td>
-              </tr>
-            </tbody>
-          </table>
+          <TodoTable todos={todos} deleteTodo={deleteTodo} />
+          <button
+            onClick={() => setShowAddTodoForm(!showAddTodoForm)}
+            className='btn btn-primary'
+          >{showAddTodoForm ? 'close New Todo' : 'New todo'}</button>
+          {
+            showAddTodoForm && <NewTodoForm handleAddTodo={handleAddTodo} />
+          }
         </div>
       </div>
     </div>
